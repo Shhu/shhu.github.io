@@ -25,7 +25,11 @@ trap 'rm -rf "$work"' EXIT
 ostree init --repo="$work/repo" --mode=archive-z2
 for app in "${apps[@]}"; do
   read -r repo bundle <<< "$app"
-  tag="$(gh release view --repo "$repo" --json tagName --jq .tagName)"
+  # The newest published release from the list: "latest" (gh release view) can still name the
+  # previous one for a few seconds after a release is created.
+  tag="$(gh api "repos/$repo/releases?per_page=10" \
+    --jq '[.[] | select((.draft or .prerelease) | not)] | sort_by(.created_at) | last | .tag_name')"
+  [[ -n "$tag" && "$tag" != null ]] || { echo "no release found in $repo" >&2; exit 1; }
   gh release download "$tag" --repo "$repo" --pattern "$bundle" --dir "$work"
   flatpak build-import-bundle --gpg-sign="$key" --gpg-homedir="$gpg_home" "$work/repo" "$work/$bundle" 2>&1 \
     | grep -v CRITICAL | grep -v '^$' || true
