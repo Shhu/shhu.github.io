@@ -4,39 +4,250 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shhu</title>
-<meta name="description" content="Les applications de Shhu : facteur, client mail, et Atelier, éditeur d'images.">
+<meta name="description" content="Les logiciels que Shhu fabrique pour son propre usage et partage avec tout le monde : facteur, client mail, et Atelier, éditeur d'images. Gratuits, open source, simples et rapides, et vos données restent chez vous.">
 <style>
-  :root { color-scheme: light dark; --bg: #f7f8f8; --card: #fff; --border: #e2e6e5; --text: #111615; --muted: #4b5654; --accent: #0f766e; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #0a0b0c; --card: #141718; --border: #24292a; --text: #f2f5f4; --muted: #a9b3b1; --accent: #2dd4bf; } }
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f8f8; --card: #fff; --border: #e2e6e5; --text: #111615; --muted: #4b5654; --accent: #0f766e;
+    --on-accent: #fff; --accent-text: #0f766e; --accent-soft: #ccfbf1; --chip: #f4f6f6;
+    --teal-wash: #e6f7f4; --violet-wash: #f1edfe; --violet: #7c3aed; --on-violet: #fff; --violet-text: #6d28d9; --violet-soft: #ede9fe;
+    --amber-soft: #fef3c7; --amber: #b45309; --teal-soft: #ccfbf1; --teal: #0f766e; --rose-soft: #ffe4e6; --rose: #be123c;
+    --mock-bg: #fff; --mock-border: #e2e6e5; --mock-line: #e7ebea; --mock-strong: #c9d0ce; --canvas: #f4f6f6;
+    --shape-a: #f59e0b; --shape-b: #0ea5e9;
+    --acc-1: #ea580c; --acc-2: #db2777; --acc-3: #7c3aed; --acc-4: #059669;
+    --av-1: #c7d2fe; --av-2: #fed7aa; --av-3: #a7f3d0; --av-4: #fbcfe8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0b0c; --card: #141718; --border: #24292a; --text: #f2f5f4; --muted: #a9b3b1; --accent: #2dd4bf;
+      --on-accent: #042f2e; --accent-text: #5eead4; --accent-soft: rgba(45, 212, 191, .12); --chip: #1b1f20;
+      --teal-wash: rgba(45, 212, 191, .10); --violet-wash: rgba(139, 92, 246, .12); --violet: #a78bfa; --on-violet: #2e1065; --violet-text: #c4b5fd; --violet-soft: rgba(139, 92, 246, .14);
+      --amber-soft: rgba(245, 158, 11, .14); --amber: #fbbf24; --teal-soft: rgba(45, 212, 191, .12); --teal: #5eead4; --rose-soft: rgba(244, 63, 94, .14); --rose: #fda4af;
+      --mock-bg: #101314; --mock-border: #262b2c; --mock-line: #2a3031; --mock-strong: #3b4344; --canvas: #1a1d1e;
+      --shape-b: #38bdf8;
+      --acc-1: #fb923c; --acc-2: #f472b6; --acc-3: #a78bfa; --acc-4: #34d399;
+      --av-1: #a5b4fc; --av-2: #fdba74; --av-3: #6ee7b7; --av-4: #f9a8d4;
+    }
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { width: 100%; max-width: 640px; }
-  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
-  p.lead { color: var(--muted); margin: 0 0 24px; }
-  .apps { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-  a.app { display: block; padding: 20px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
-  a.app:hover, a.app:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
-  a.app b { display: block; font-size: 19px; margin-bottom: 4px; }
-  a.app span { color: var(--muted); font-size: 15px; }
-  a.app em { display: block; margin-top: 12px; color: var(--accent); font-style: normal; font-weight: 600; font-size: 14px; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: inherit; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  svg { flex: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .page { max-width: 1080px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 22px 0; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 19px; font-weight: 750; letter-spacing: -.02em; }
+  .logo { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--accent); color: var(--on-accent); font-size: 16px; font-weight: 800; }
+  nav .spacer, footer .spacer { flex: 1; }
+  nav a.link { padding: 8px 4px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550; }
+  nav a.link:hover { color: var(--text); }
+
+  header { display: flex; flex-direction: column; gap: 22px; max-width: 760px; padding: clamp(40px, 9vw, 104px) 0 clamp(40px, 7vw, 72px); }
+  .pill { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: 13.5px; font-weight: 650; }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--accent); }
+  h1 { margin: 0; font-size: clamp(34px, 6.4vw, 62px); line-height: 1.05; font-weight: 800; letter-spacing: -.035em; }
+  h1 em { font-style: normal; color: var(--accent-text); }
+  .lead { margin: 0; max-width: 620px; font-size: clamp(17px, 2.2vw, 20px); line-height: 1.55; color: var(--muted); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .button { height: 50px; display: inline-flex; align-items: center; gap: 8px; padding: 0 22px; border-radius: 14px; text-decoration: none; font-size: 16px; font-weight: 650; }
+  .button.primary { background: var(--accent); color: var(--on-accent); }
+  .button.secondary { padding: 0 20px; border: 1px solid var(--border); background: var(--card); font-weight: 600; }
+  .button.secondary:hover { border-color: var(--accent); }
+
+  .principles { display: flex; flex-wrap: wrap; gap: 14px; padding-bottom: clamp(48px, 8vw, 88px); }
+  .principle { flex: 1 1 260px; display: flex; flex-direction: column; gap: 12px; padding: 22px; border-radius: 18px; background: var(--card); border: 1px solid var(--border); }
+  .principle .icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .principle b { font-size: 17px; }
+  .principle span { font-size: 15px; color: var(--muted); }
+  .amber { background: var(--amber-soft); color: var(--amber); }
+  .teal { background: var(--teal-soft); color: var(--teal); }
+  .rose { background: var(--rose-soft); color: var(--rose); }
+
+  section h2 { margin: 0; font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.025em; }
+  #apps { display: flex; flex-direction: column; gap: 22px; padding-bottom: clamp(56px, 9vw, 104px); scroll-margin-top: 16px; }
+  #apps .intro { display: flex; flex-direction: column; gap: 6px; }
+  #apps .intro p { margin: 0; color: var(--muted); }
+  .apps { display: flex; flex-wrap: wrap; gap: 18px; }
+  a.app { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; border-radius: 22px; background: var(--card); border: 1px solid var(--border); text-decoration: none; overflow: hidden; transition: border-color .15s, transform .15s; }
+  a.app:hover, a.app:focus-visible { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+  .art { height: 220px; padding: 26px 26px 0; display: flex; align-items: flex-end; }
+  .art.facteur { background: var(--teal-wash); }
+  .art.atelier { background: var(--violet-wash); }
+  .window { flex: 1; height: 100%; display: flex; border-radius: 14px 14px 0 0; background: var(--mock-bg); border: 1px solid var(--mock-border); border-bottom: 0; overflow: hidden; }
+  .accounts { width: 26%; padding: 14px 10px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--mock-border); }
+  .accounts .compose { height: 18px; border-radius: 6px; background: var(--accent); }
+  .accounts span:not(.compose) { display: flex; align-items: center; gap: 6px; }
+  .accounts i { width: 12px; height: 12px; border-radius: 999px; }
+  .line { flex: 1; height: 6px; border-radius: 3px; background: var(--mock-line); }
+  .rows { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .rows > span { display: flex; align-items: center; gap: 8px; padding: 7px; border-radius: 8px; }
+  .rows > span:first-child { background: var(--teal-soft); }
+  .rows i { width: 20px; height: 20px; border-radius: 999px; }
+  .rows b { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .rows b::before, .rows b::after { content: ""; height: 6px; border-radius: 3px; background: var(--mock-strong); width: var(--w1); }
+  .rows b::after { height: 5px; background: var(--mock-line); width: var(--w2); }
+  .canvas { flex: 1; position: relative; margin: 12px; border-radius: 8px; background: var(--canvas); overflow: hidden; }
+  .canvas i { position: absolute; }
+  .layers { width: 30%; padding: 12px 10px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid var(--mock-border); }
+  .layers span { display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 7px; }
+  .layers span:first-child { background: var(--violet-soft); }
+  .layers i { width: 22px; height: 16px; border-radius: 4px; }
+  .layers .line { height: 5px; }
+  .about { padding: 24px 26px 26px; display: flex; flex-direction: column; gap: 12px; }
+  .name { display: flex; align-items: center; gap: 12px; }
+  .name .icon { width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; }
+  .name div { display: flex; flex-direction: column; }
+  .name b { font-size: 23px; font-weight: 800; letter-spacing: -.02em; }
+  .name small { font-size: 13.5px; color: var(--muted); }
+  .about > p { margin: 0; color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags span { padding: 4px 10px; border-radius: 999px; background: var(--chip); border: 1px solid var(--border); font-size: 13px; }
+  .more { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
+
+  #pourquoi { padding-bottom: clamp(56px, 9vw, 104px); scroll-margin-top: 16px; }
+  .why { display: flex; flex-wrap: wrap; gap: 28px; padding: clamp(26px, 5vw, 48px); border-radius: 26px; background: var(--card); border: 1px solid var(--border); }
+  .why > div:first-child { flex: 1 1 240px; display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow { font-size: 13.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+  .why h2 { font-size: clamp(24px, 3.4vw, 32px); line-height: 1.15; }
+  .why > div:last-child { flex: 2 1 380px; display: flex; flex-direction: column; gap: 14px; font-size: 17px; line-height: 1.65; color: var(--muted); }
+  .why p { margin: 0; }
+  .why .signature { margin-top: 4px; font-size: 16px; font-weight: 700; color: var(--text); }
+
+  footer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 26px 0 36px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+  footer .brand { gap: 8px; font-size: 14px; font-weight: 700; color: var(--text); }
+  footer .logo { width: 22px; height: 22px; border-radius: 7px; font-size: 12px; }
+  footer a:not(.brand) { color: var(--muted); text-decoration: none; }
+  footer a:not(.brand):hover { color: var(--text); }
 </style>
 </head>
 <body>
-<main>
-  <h1>Shhu</h1>
-  <p class="lead">Des applications simples et rapides, qui gardent vos données chez vous.</p>
-  <div class="apps">
-    <a class="app" href="facteur/">
-      <b>facteur</b>
-      <span>Client mail rapide, hors ligne et respectueux de la vie privée.</span>
-      <em>Découvrir facteur →</em>
-    </a>
-    <a class="app" href="atelier/">
-      <b>Atelier</b>
-      <span>Éditeur d'images léger et rapide : calques, réglages et sélection par IA locale.</span>
-      <em>Découvrir Atelier →</em>
-    </a>
-  </div>
-</main>
+<div class="page">
+  <nav aria-label="Navigation">
+    <a class="brand" href="#"><span class="logo" aria-hidden="true">S</span>Shhu</a>
+    <span class="spacer"></span>
+    <a class="link" href="#apps">Applications</a>
+    <a class="link" href="#pourquoi">Pourquoi</a>
+    <a class="link" href="https://github.com/Shhu">GitHub</a>
+  </nav>
+
+  <header>
+    <span class="pill">Logiciels faits main, gratuits et open source</span>
+    <h1>Les outils que je fabrique pour moi, partagés avec <em>tout le monde</em>.</h1>
+    <p class="lead">J’écris les applications dont j’ai besoin au quotidien. Si elles peuvent vous servir aussi, elles sont là, gratuites et open source : simples, rapides, et vos données restent chez vous.</p>
+    <div class="actions">
+      <a class="button primary" href="#apps">Voir les applications
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></a>
+      <a class="button secondary" href="#pourquoi">Pourquoi je fais ça</a>
+    </div>
+  </header>
+
+  <section class="principles" aria-label="Principes">
+    <div class="principle">
+      <span class="icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+      <b>Faites pour un vrai usage</b>
+      <span>Je m’en sers tous les jours. Chaque fonction existe parce que j’en ai eu besoin.</span>
+    </div>
+    <div class="principle">
+      <span class="icon teal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+      <b>Vos données restent chez vous</b>
+      <span>Tout fonctionne sur votre appareil, sans compte à créer chez moi.</span>
+    </div>
+    <div class="principle">
+      <span class="icon rose"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
+      <b>Partagées avec tout le monde</b>
+      <span>Gratuites et open source : téléchargez-les, servez-vous-en, dites-moi ce qui manque.</span>
+    </div>
+  </section>
+
+  <section id="apps" aria-labelledby="h-apps">
+    <div class="intro">
+      <h2 id="h-apps">Les applications</h2>
+      <p>Deux outils pour l’instant. D’autres viendront, au fil de mes besoins.</p>
+    </div>
+    <div class="apps">
+      <a class="app" href="facteur/">
+        <div class="art facteur" aria-hidden="true">
+          <div class="window">
+            <div class="accounts">
+              <span class="compose"></span>
+              <span><i style="background: var(--acc-1)"></i><span class="line"></span></span>
+              <span><i style="background: var(--acc-2)"></i><span class="line"></span></span>
+              <span><i style="background: var(--acc-3)"></i><span class="line"></span></span>
+              <span><i style="background: var(--acc-4)"></i><span class="line"></span></span>
+            </div>
+            <div class="rows">
+              <span><i style="background: var(--av-1)"></i><b style="--w1: 45%; --w2: 80%"></b></span>
+              <span><i style="background: var(--av-2)"></i><b style="--w1: 35%; --w2: 70%"></b></span>
+              <span><i style="background: var(--av-3)"></i><b style="--w1: 50%; --w2: 62%"></b></span>
+              <span><i style="background: var(--av-4)"></i><b style="--w1: 30%; --w2: 75%"></b></span>
+            </div>
+          </div>
+        </div>
+        <div class="about">
+          <div class="name">
+            <span class="icon" style="background: var(--accent); color: var(--on-accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+            <div><b>facteur</b><small>Messagerie · Windows et Linux</small></div>
+          </div>
+          <p>Client mail rapide, hors ligne et respectueux de la vie privée.</p>
+          <div class="tags"><span>Plusieurs comptes</span><span>Boîte unifiée</span><span>Hors ligne</span><span>IA locale et dictée</span><span>Agenda</span></div>
+          <span class="more" style="color: var(--accent-text)">Découvrir facteur
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a class="app" href="atelier/">
+        <div class="art atelier" aria-hidden="true">
+          <div class="window">
+            <div class="canvas">
+              <i style="left: 14%; top: 22%; width: 38%; height: 58%; border-radius: 999px; background: var(--shape-a)"></i>
+              <i style="left: 44%; top: 34%; width: 40%; height: 44%; border-radius: 18px; background: var(--shape-b); opacity: .9"></i>
+              <i style="left: 10%; top: 16%; width: 46%; height: 70%; border-radius: 999px; border: 2px dashed var(--violet)"></i>
+            </div>
+            <div class="layers">
+              <span><i style="background: var(--shape-a)"></i><span class="line"></span></span>
+              <span><i style="background: var(--shape-b)"></i><span class="line"></span></span>
+              <span><i style="background: var(--mock-strong)"></i><span class="line"></span></span>
+            </div>
+          </div>
+        </div>
+        <div class="about">
+          <div class="name">
+            <span class="icon" style="background: var(--violet); color: var(--on-violet)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+            <div><b>Atelier</b><small>Éditeur d’images · Windows, macOS et Linux</small></div>
+          </div>
+          <p>Éditeur d’images léger et rapide : calques, réglages et sélection par IA locale.</p>
+          <div class="tags"><span>Calques</span><span>Réglages</span><span>Sélection par IA locale</span></div>
+          <span class="more" style="color: var(--violet-text)">Découvrir Atelier
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section id="pourquoi" aria-labelledby="h-why">
+    <div class="why">
+      <div>
+        <span class="eyebrow">Pourquoi</span>
+        <h2 id="h-why">D’abord pour moi. Ensuite pour vous.</h2>
+      </div>
+      <div>
+        <p>Je fabrique ces logiciels parce que je n’ai pas trouvé ceux que je voulais : légers, rapides, qui ne demandent pas de créer un compte et qui gardent mes fichiers sur mon ordinateur.</p>
+        <p>Ils évoluent au rythme de mes usages. Quand un outil me rend service, je le partage tel quel, en espérant qu’il vous en rende aussi. Vos retours sont les bienvenus.</p>
+        <span class="signature">— Shhu</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a class="brand" href="#"><span class="logo" aria-hidden="true">S</span>Shhu</a>
+    <span>Fait main, pour moi et pour vous.</span>
+    <span class="spacer"></span>
+    <a href="facteur/">facteur</a>
+    <a href="atelier/">Atelier</a>
+    <a href="https://github.com/Shhu">GitHub</a>
+  </footer>
+</div>
 </body>
 </html>
