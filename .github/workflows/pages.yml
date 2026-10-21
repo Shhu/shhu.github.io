@@ -1,0 +1,38 @@
+name: Website
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      # The signed Flatpak repository, built and signed by flatpak/publish.sh on Yann's computer
+      # (the key never comes here), served at flatpak/repo/.
+      - name: Flatpak repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download flatpak-repo --repo "$GITHUB_REPOSITORY" --pattern flatpak-repo.tar --dir "$RUNNER_TEMP"; then
+            tar -C flatpak -xf "$RUNNER_TEMP/flatpak-repo.tar"
+          else
+            echo "No Flatpak repository published yet."
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
