@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shhu</title>
-<meta name="description" content="Les logiciels que Shhu fabrique pour son propre usage et partage avec tout le monde : facteur, client mail, et Atelier, éditeur d'images. Gratuits, open source, simples et rapides, et vos données restent chez vous.">
+<meta name="description" content="Les logiciels que Shhu fabrique pour son propre usage et partage avec tout le monde : facteur, client mail, Atelier, éditeur d'images, et CSV Edit, éditeur de fichiers CSV. Gratuits, open source, simples et rapides, et vos données restent chez vous.">
 <style>
   :root {
     color-scheme: light dark;
@@ -14,6 +14,7 @@
     --amber-soft: #fef3c7; --amber: #b45309; --teal-soft: #ccfbf1; --teal: #0f766e; --rose-soft: #ffe4e6; --rose: #be123c;
     --mock-bg: #fff; --mock-border: #e2e6e5; --mock-line: #e7ebea; --mock-strong: #c9d0ce; --canvas: #f4f6f6;
     --shape-a: #f59e0b; --shape-b: #0ea5e9;
+    --mint-wash: #e8f8ef; --mint: #15803d; --on-mint: #fff; --mint-text: #15803d; --mint-soft: #d1fae5;
     --acc-1: #ea580c; --acc-2: #db2777; --acc-3: #7c3aed; --acc-4: #059669;
     --av-1: #c7d2fe; --av-2: #fed7aa; --av-3: #a7f3d0; --av-4: #fbcfe8;
   }
@@ -25,6 +26,7 @@
       --amber-soft: rgba(245, 158, 11, .14); --amber: #fbbf24; --teal-soft: rgba(45, 212, 191, .12); --teal: #5eead4; --rose-soft: rgba(244, 63, 94, .14); --rose: #fda4af;
       --mock-bg: #101314; --mock-border: #262b2c; --mock-line: #2a3031; --mock-strong: #3b4344; --canvas: #1a1d1e;
       --shape-b: #38bdf8;
+      --mint-wash: rgba(61, 214, 140, .10); --mint: #3dd68c; --on-mint: #0c1a13; --mint-text: #6ee7a8; --mint-soft: rgba(61, 214, 140, .15);
       --acc-1: #fb923c; --acc-2: #f472b6; --acc-3: #a78bfa; --acc-4: #34d399;
       --av-1: #a5b4fc; --av-2: #fdba74; --av-3: #6ee7b7; --av-4: #f9a8d4;
     }
@@ -75,6 +77,17 @@
   .art { height: 220px; padding: 26px 26px 0; display: flex; align-items: flex-end; }
   .art.facteur { background: var(--teal-wash); }
   .art.atelier { background: var(--violet-wash); }
+  .art.csvedit { background: var(--mint-wash); }
+  .sheet { flex: 1; display: flex; flex-direction: column; }
+  .sheet span { display: flex; height: 26px; border-bottom: 1px solid var(--mock-line); }
+  .sheet span:first-child { background: var(--mock-line); }
+  .sheet i { flex: 1; border-right: 1px solid var(--mock-line); display: flex; align-items: center; padding: 0 8px; }
+  .sheet i::before { content: ""; height: 5px; border-radius: 3px; background: var(--mock-strong); width: var(--w, 60%); }
+  .sheet span:first-child i::before { background: var(--mint); opacity: .55; }
+  .sheet span.on i:nth-child(3) { box-shadow: inset 0 0 0 2px var(--mint); }
+  .sheet span:nth-child(even) i { background: var(--canvas); }
+  /* The selected cell, after the stripes. */
+  .sheet span.on i:nth-child(3) { background: var(--mint-soft); }
   .window { flex: 1; height: 100%; display: flex; border-radius: 14px 14px 0 0; background: var(--mock-bg); border: 1px solid var(--mock-border); border-bottom: 0; overflow: hidden; }
   .accounts { width: 26%; padding: 14px 10px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--mock-border); }
   .accounts .compose { height: 18px; border-radius: 6px; background: var(--accent); }
@@ -164,7 +177,7 @@
   <section id="apps" aria-labelledby="h-apps">
     <div class="intro">
       <h2 id="h-apps">Les applications</h2>
-      <p>Deux outils pour l’instant. D’autres viendront, au fil de mes besoins.</p>
+      <p>Trois outils pour l’instant. D’autres viendront, au fil de mes besoins.</p>
     </div>
     <div class="apps">
       <a class="app" href="facteur/">
@@ -223,6 +236,31 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
         </div>
       </a>
+
+      <a class="app" href="csvedit/">
+        <div class="art csvedit" aria-hidden="true">
+          <div class="window">
+            <div class="sheet">
+              <span><i></i><i></i><i></i><i></i></span>
+              <span><i style="--w: 70%"></i><i style="--w: 45%"></i><i style="--w: 80%"></i><i style="--w: 35%"></i></span>
+              <span class="on"><i style="--w: 55%"></i><i style="--w: 60%"></i><i style="--w: 50%"></i><i style="--w: 65%"></i></span>
+              <span><i style="--w: 75%"></i><i style="--w: 40%"></i><i style="--w: 70%"></i><i style="--w: 45%"></i></span>
+              <span><i style="--w: 50%"></i><i style="--w: 65%"></i><i style="--w: 35%"></i><i style="--w: 60%"></i></span>
+              <span><i style="--w: 65%"></i><i style="--w: 50%"></i><i style="--w: 60%"></i><i style="--w: 40%"></i></span>
+            </div>
+          </div>
+        </div>
+        <div class="about">
+          <div class="name">
+            <span class="icon" style="background: var(--mint); color: var(--on-mint)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect width="18" height="16" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M9 10v10"/></svg></span>
+            <div><b>CSV Edit</b><small>Éditeur de CSV · Windows et Linux</small></div>
+          </div>
+          <p>Éditeur de fichiers CSV simple et rapide : tout séparateur, tout encodage, et seulement les colonnes utiles.</p>
+          <div class="tags"><span>Import avec aperçu</span><span>Poliris !#</span><span>Choix des colonnes</span><span>Inspecteur</span></div>
+          <span class="more" style="color: var(--mint-text)">Découvrir CSV Edit
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -246,6 +284,7 @@
     <span class="spacer"></span>
     <a href="facteur/">facteur</a>
     <a href="atelier/">Atelier</a>
+    <a href="csvedit/">CSV Edit</a>
     <a href="https://github.com/Shhu">GitHub</a>
   </footer>
 </div>
