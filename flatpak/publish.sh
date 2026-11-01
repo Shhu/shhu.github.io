@@ -30,7 +30,7 @@ for app in "${apps[@]}"; do
   # The newest published release from the list: "latest" (gh release view) can still name the
   # previous one for a few seconds after a release is created.
   tag="$(gh api "repos/$repo/releases?per_page=10" \
-    --jq '[.[] | select((.draft or .prerelease) | not)] | sort_by(.created_at) | last | .tag_name')"
+    --jq '[.[] | select((.draft or .prerelease) | not)] | sort_by(.published_at) | last | .tag_name')"
   [[ -n "$tag" && "$tag" != null ]] || { echo "no release found in $repo" >&2; exit 1; }
   gh release download "$tag" --repo "$repo" --pattern "$bundle" --dir "$work"
   # A bundle left out would disappear from the repository for all its users: stop instead.
@@ -53,15 +53,24 @@ if ! gh release view flatpak-repo --repo "$site" > /dev/null 2>&1; then
     --notes "Built by flatpak/publish.sh; the Pages workflow serves it at https://shu-app.com/flatpak/repo/."
 fi
 gh release upload flatpak-repo "$work/flatpak-repo.tar" --repo "$site" --clobber
-before="$(gh run list --repo "$site" --workflow pages.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
+dispatched="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 gh workflow run pages.yml --repo "$site"
-# Wait for the deployment and report its outcome: a failed one must not go unnoticed.
-run="$before"
+# Waits for the deployment and reports its outcome: a failed one must not go unnoticed. A later
+# push cancels a run and deploys the same repository, so the newest run since is the one that counts.
+newest() {
+  gh run list --repo "$site" --workflow pages.yml --limit 1 --created ">=$dispatched" --json databaseId \
+    --jq '.[0].databaseId // empty'
+}
+run=""
 for _ in {1..30}; do
   sleep 5
-  run="$(gh run list --repo "$site" --workflow pages.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
-  [[ "$run" != "$before" ]] && break
+  run="$(newest)"
+  [[ -n "$run" ]] && break
 done
-[[ "$run" != "$before" ]] || { echo "the deployment did not start" >&2; exit 1; }
-gh run watch "$run" --repo "$site" --exit-status > /dev/null
+[[ -n "$run" ]] || { echo "the deployment did not start" >&2; exit 1; }
+while ! gh run watch "$run" --repo "$site" --exit-status > /dev/null; do
+  latest="$(newest)"
+  [[ "$latest" != "$run" ]] || { echo "the deployment failed: gh run view $run --repo $site" >&2; exit 1; }
+  run="$latest"
+done
 echo "Flatpak repository published: https://shu-app.com/flatpak/repo/"
