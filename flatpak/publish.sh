@@ -53,5 +53,15 @@ if ! gh release view flatpak-repo --repo "$site" > /dev/null 2>&1; then
     --notes "Built by flatpak/publish.sh; the Pages workflow serves it at https://shu-app.com/flatpak/repo/."
 fi
 gh release upload flatpak-repo "$work/flatpak-repo.tar" --repo "$site" --clobber
+before="$(gh run list --repo "$site" --workflow pages.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
 gh workflow run pages.yml --repo "$site"
-echo "Flatpak repository published: https://shu-app.com/flatpak/ (live within a few minutes)"
+# Wait for the deployment and report its outcome: a failed one must not go unnoticed.
+run="$before"
+for _ in {1..30}; do
+  sleep 5
+  run="$(gh run list --repo "$site" --workflow pages.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
+  [[ "$run" != "$before" ]] && break
+done
+[[ "$run" != "$before" ]] || { echo "the deployment did not start" >&2; exit 1; }
+gh run watch "$run" --repo "$site" --exit-status > /dev/null
+echo "Flatpak repository published: https://shu-app.com/flatpak/repo/"
