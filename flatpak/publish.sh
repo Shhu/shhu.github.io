@@ -17,6 +17,7 @@ apps=(
   "Shhu/facteur facteur.flatpak"
   "Shhu/atelier atelier.flatpak"
   "Shhu/csvedit csvedit.flatpak"
+  "Shhu/papillon papillon.flatpak"
 )
 
 [[ -d "$gpg_home" ]] || { echo "missing signing key: $gpg_home" >&2; exit 1; }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shhu</title>
-<meta name="description" content="Les logiciels que Shhu fabrique pour son propre usage et partage avec tout le monde : facteur, client mail, Atelier, éditeur d'images, et CSV Edit, éditeur de fichiers CSV. Gratuits, open source, simples et rapides, et vos données restent chez vous.">
+<meta name="description" content="Les logiciels que Shhu fabrique pour son propre usage et partage avec tout le monde : facteur, client mail, Atelier, éditeur d'images, CSV Edit, éditeur de fichiers CSV, et Papillon, notes flottantes sur le bureau. Gratuits, open source, simples et rapides, et vos données restent chez vous.">
 <style>
   :root {
     color-scheme: light dark;
@@ -14,6 +14,7 @@
     --amber-soft: #fef3c7; --amber: #b45309; --teal-soft: #ccfbf1; --teal: #0f766e; --rose-soft: #ffe4e6; --rose: #be123c;
     --mock-bg: #fff; --mock-border: #e2e6e5; --mock-line: #e7ebea; --mock-strong: #c9d0ce; --canvas: #f4f6f6;
     --shape-a: #f59e0b; --shape-b: #0ea5e9;
+    --sun-wash: #fff8d6; --sun: #ca8a04; --on-sun: #fff; --sun-text: #a16207;
     --mint-wash: #e8f8ef; --mint: #15803d; --on-mint: #fff; --mint-text: #15803d; --mint-soft: #d1fae5;
     --acc-1: #ea580c; --acc-2: #db2777; --acc-3: #7c3aed; --acc-4: #059669;
     --av-1: #c7d2fe; --av-2: #fed7aa; --av-3: #a7f3d0; --av-4: #fbcfe8;
@@ -26,6 +27,7 @@
       --amber-soft: rgba(245, 158, 11, .14); --amber: #fbbf24; --teal-soft: rgba(45, 212, 191, .12); --teal: #5eead4; --rose-soft: rgba(244, 63, 94, .14); --rose: #fda4af;
       --mock-bg: #101314; --mock-border: #262b2c; --mock-line: #2a3031; --mock-strong: #3b4344; --canvas: #1a1d1e;
       --shape-b: #38bdf8;
+      --sun-wash: rgba(255, 216, 77, .10); --sun: #ffd84d; --on-sun: #2b2308; --sun-text: #fde68a;
       --mint-wash: rgba(61, 214, 140, .10); --mint: #3dd68c; --on-mint: #0c1a13; --mint-text: #6ee7a8; --mint-soft: rgba(61, 214, 140, .15);
       --acc-1: #fb923c; --acc-2: #f472b6; --acc-3: #a78bfa; --acc-4: #34d399;
       --av-1: #a5b4fc; --av-2: #fdba74; --av-3: #6ee7b7; --av-4: #f9a8d4;
@@ -88,6 +90,13 @@
   .sheet span:nth-child(even) i { background: var(--canvas); }
   /* The selected cell, after the stripes. */
   .sheet span.on i:nth-child(3) { background: var(--mint-soft); }
+  .art.papillon { background: var(--sun-wash); align-items: center; justify-content: center; gap: 16px; padding: 26px; }
+  .sticky { width: 34%; height: 130px; padding: 26px 12px 12px; display: flex; flex-direction: column; gap: 9px; border-radius: 3px; box-shadow: 0 8px 18px rgba(0, 0, 0, .16); position: relative; }
+  .sticky::before { content: ""; position: absolute; inset: 0 0 auto; height: 16px; background: rgba(0, 0, 0, .07); }
+  .sticky i { height: 5px; border-radius: 3px; background: rgba(38, 35, 26, .4); width: var(--w, 80%); }
+  .sticky.a { background: #fff4b0; transform: rotate(-3deg); }
+  .sticky.b { background: #ffd0e6; transform: translateY(10px) rotate(2deg); }
+  .sticky.c { background: #cfe9ff; transform: rotate(-1deg); }
   .window { flex: 1; height: 100%; display: flex; border-radius: 14px 14px 0 0; background: var(--mock-bg); border: 1px solid var(--mock-border); border-bottom: 0; overflow: hidden; }
   .accounts { width: 26%; padding: 14px 10px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--mock-border); }
   .accounts .compose { height: 18px; border-radius: 6px; background: var(--accent); }
@@ -177,7 +186,7 @@
   <section id="apps" aria-labelledby="h-apps">
     <div class="intro">
       <h2 id="h-apps">Les applications</h2>
-      <p>Trois outils pour l’instant. D’autres viendront, au fil de mes besoins.</p>
+      <p>Quatre outils pour l’instant. D’autres viendront, au fil de mes besoins.</p>
     </div>
     <div class="apps">
       <a class="app" href="facteur/">
@@ -261,6 +270,24 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
         </div>
       </a>
+
+      <a class="app" href="papillon/">
+        <div class="art papillon" aria-hidden="true">
+          <div class="sticky a"><i></i><i style="--w: 60%"></i><i style="--w: 72%"></i></div>
+          <div class="sticky b"><i style="--w: 70%"></i><i></i><i style="--w: 45%"></i></div>
+          <div class="sticky c"><i style="--w: 55%"></i><i style="--w: 75%"></i></div>
+        </div>
+        <div class="about">
+          <div class="name">
+            <span class="icon" style="background: var(--sun); color: var(--on-sun)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 4h16v11l-5 5H4z"/><path d="M20 15h-5v5"/></svg></span>
+            <div><b>Papillon</b><small>Notes flottantes · Windows et Linux</small></div>
+          </div>
+          <p>Des notes sur votre bureau, enregistrées pendant la frappe et toujours là où vous les avez laissées.</p>
+          <div class="tags"><span>Sept couleurs</span><span>Premier plan</span><span>Recherche</span><span>Un seul .exe</span></div>
+          <span class="more" style="color: var(--sun-text)">Découvrir Papillon
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -285,6 +312,7 @@
     <a href="facteur/">facteur</a>
     <a href="atelier/">Atelier</a>
     <a href="csvedit/">CSV Edit</a>
+    <a href="papillon/">Papillon</a>
     <a href="https://github.com/Shhu">GitHub</a>
   </footer>
 </div>
