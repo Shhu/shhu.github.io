@@ -33,10 +33,17 @@ for app in "${apps[@]}"; do
     --jq '[.[] | select((.draft or .prerelease) | not)] | sort_by(.created_at) | last | .tag_name')"
   [[ -n "$tag" && "$tag" != null ]] || { echo "no release found in $repo" >&2; exit 1; }
   gh release download "$tag" --repo "$repo" --pattern "$bundle" --dir "$work"
-  flatpak build-import-bundle --gpg-sign="$key" --gpg-homedir="$gpg_home" "$work/repo" "$work/$bundle" 2>&1 \
-    | grep -v CRITICAL | grep -v '^$' || true
+  # A bundle left out would disappear from the repository for all its users: stop instead.
+  if ! log="$(flatpak build-import-bundle --gpg-sign="$key" --gpg-homedir="$gpg_home" "$work/repo" "$work/$bundle" 2>&1)"; then
+    echo "$log" >&2
+    echo "could not import $bundle from $repo: repository not published" >&2
+    exit 1
+  fi
+  grep -v CRITICAL <<< "$log" | grep -v '^$' || true
   echo "$repo $tag"
 done
+imported="$(ostree refs --repo="$work/repo" | grep -c '^app/' || true)"
+[[ "$imported" == "${#apps[@]}" ]] || { echo "$imported apps imported out of ${#apps[@]}: repository not published" >&2; exit 1; }
 flatpak build-update-repo --title=shu-app.com --gpg-sign="$key" --gpg-homedir="$gpg_home" \
   --generate-static-deltas --prune "$work/repo"
 
