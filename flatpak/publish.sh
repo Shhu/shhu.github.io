@@ -21,6 +21,16 @@ apps=(
 )
 
 [[ -d "$gpg_home" ]] || { echo "missing signing key: $gpg_home" >&2; exit 1; }
+
+# What is signed must be what was built here: a GitHub token is enough to replace a release's
+# bundle, and everyone would then get it through `flatpak update`. The app being published passes
+# the checksum of the bundle it just built (`SHU_APP_BUNDLE="owner/repo tag sha256"`); the others
+# must match what was recorded when they were published, here. A release not recorded yet (an app
+# whose own script doesn't pass its checksum) is recorded on first sight, with a warning.
+records="$HOME/.config/shu-app/bundles.sha256"
+mkdir -p "$(dirname "$records")"
+touch "$records"
+read -r expected_repo expected_tag expected_sha <<< "${SHU_APP_BUNDLE:-}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
@@ -33,6 +43,18 @@ for app in "${apps[@]}"; do
     --jq '[.[] | select((.draft or .prerelease) | not)] | sort_by(.published_at) | last | .tag_name')"
   [[ -n "$tag" && "$tag" != null ]] || { echo "no release found in $repo" >&2; exit 1; }
   gh release download "$tag" --repo "$repo" --pattern "$bundle" --dir "$work"
+  sha="$(sha256sum "$work/$bundle" | cut -d' ' -f1)"
+  recorded="$(awk -v r="$repo" -v t="$tag" '$1 == r && $2 == t { print $3 }' "$records")"
+  if [[ "$repo" == "$expected_repo" ]]; then
+    [[ "$tag" == "$expected_tag" && "$sha" == "$expected_sha" ]] ||
+      { echo "$repo $tag on GitHub is not the bundle built here: repository not published" >&2; exit 1; }
+  elif [[ -n "$recorded" ]]; then
+    [[ "$sha" == "$recorded" ]] ||
+      { echo "$repo $tag changed on GitHub since it was published: repository not published" >&2; exit 1; }
+  else
+    echo "warning: $repo $tag is not recorded here; recording it as published" >&2
+  fi
+  [[ -n "$recorded" ]] || echo "$repo $tag $sha" >> "$records"
   # A bundle left out would disappear from the repository for all its users: stop instead.
   if ! log="$(flatpak build-import-bundle --gpg-sign="$key" --gpg-homedir="$gpg_home" "$work/repo" "$work/$bundle" 2>&1)"; then
     echo "$log" >&2
